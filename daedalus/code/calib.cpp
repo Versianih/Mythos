@@ -3,9 +3,9 @@
 void waitBtnPress(Leds leds, const char* message) {
   Serial.println(message);
   leds.blue();
-  while (digitalRead(BTN2) == HIGH) { delay(10); }
+  while (digitalRead(BTN) == HIGH) { delay(10); }
   delay(DEBOUNCE_CALIBRATION);
-  while (digitalRead(BTN2) == LOW) { delay(10); }
+  while (digitalRead(BTN) == LOW) { delay(10); }
   delay(DEBOUNCE_CALIBRATION);
   leds.blue();
   delay(500);

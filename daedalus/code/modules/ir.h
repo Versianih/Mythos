@@ -108,8 +108,8 @@ private:
   float _ema[NUM_SENSORS];
   float _calScale[NUM_SENSORS];
 
-  int _calWhite[NUM_SENSORS] = { 2030, 2257, 2557, 3613, 3431,  897, 2833 };
-  int _calBlack[NUM_SENSORS] = {    1,  125,  297,  710,  380,    0,  309 };
+  int _calWhite[NUM_SENSORS] = {  109,  139,  187,  184,  263,  201,  113 };
+  int _calBlack[NUM_SENSORS] = {    0,    0,    0,    0,    0,    0,    0 };
 
   void preComputeScale() {
     for (int i = 0; i < NUM_SENSORS; i++) {

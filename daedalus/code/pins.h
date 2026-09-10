@@ -1,10 +1,10 @@
 #pragma once
 
 // ==== InfraVermelho ====
-#define ESQ3_IR 36
-#define ESQ2_IR 39
+#define ESQ3_IR 36 // VP
+#define ESQ2_IR 39 // VN
 #define ESQ1_IR 34
-#define CEN_IR 25
+#define CEN_IR 25  // Testar no 4 ou 15
 #define DIR1_IR 35
 #define DIR2_IR 32
 #define DIR3_IR 33
@@ -23,13 +23,11 @@
 // ==== ===== ====
 
 // ==== Botões ====
-#define BTN1 19
-#define BTN2 23
+#define BTN 19
 // ==== ====== ====
 
 // ==== Leds ====
 #define LED_VERDE 18
 #define LED_AMARELO 5
 #define LED_VERMELHO 17
-#define LED_AZUL 16
 // ==== ==== ====

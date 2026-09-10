@@ -9,7 +9,7 @@ void checkStart() {
   static bool maquinaRodando = false;
   static unsigned long ultimoPressionamentoBtnStart = 0;
 
-  if (digitalRead(BTN1) == LOW) {
+  if (digitalRead(BTN) == LOW) {
     unsigned long tempoAtual = millis();
     if (tempoAtual - ultimoPressionamentoBtnStart > DEBOUNCE_START) {
       ultimoPressionamentoBtnStart = tempoAtual;
@@ -48,8 +48,7 @@ void setup() {
 
   leds.yellow();
 
-  pinMode(BTN1, INPUT_PULLUP);
-  pinMode(BTN2, INPUT_PULLUP);
+  pinMode(BTN, INPUT_PULLUP);
 
   analogReadResolution(10);         // 10 bits (0-1023) é mais rápido que 12 bits e suficiente para o PID
   // analogSetAttenuation(ADC_11db);   // Permite ler a faixa completa de 0 a 3.3V
