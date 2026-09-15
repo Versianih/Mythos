@@ -1,88 +1,186 @@
 #include "config.h"
 
-StateMachine maquina;
-State *stateParar;
-State *stateSeguirLinha;
+enum RobotState {
+  IDLE,
+  HOLDING,
+  FOLLOWING
+};
 
-/* ====== TRANSIÇÕES ====== */
-void checkStart() {
-  static bool maquinaRodando = false;
-  static unsigned long ultimoPressionamentoBtnStart = 0;
+RobotState robotState = IDLE;
+bool previousButtonState = false;
 
-  if (digitalRead(BTN) == LOW) {
-    unsigned long tempoAtual = millis();
-    if (tempoAtual - ultimoPressionamentoBtnStart > DEBOUNCE_START) {
-      ultimoPressionamentoBtnStart = tempoAtual;
+bool readButtonDebounced() {
+  static bool stableState = false;
+  static bool lastReading = false;
+  static unsigned long lastChange = 0;
 
-      if (maquinaRodando) {
-        maquinaRodando = false;
-        maquina.transitionTo(stateParar);
-      } else {
-        maquinaRodando = true;
-        maquina.transitionTo(stateSeguirLinha);
-        leds.off();
-        leds.green();
-      }
+  bool reading = (digitalRead(BTN) == LOW);
+
+  if (reading != lastReading) {
+    lastChange = millis();
+    lastReading = reading;
+  }
+
+  if (millis() - lastChange > DEBOUNCE_START) {
+    stableState = reading;
+  }
+
+  return stableState;
+}
+
+unsigned long lastIdleBlink = 0;
+bool idleYellowOn = false;
+const unsigned long IDLE_BLINK_INTERVAL = 400;
+
+void enterIdle() {
+  robotState = IDLE;
+  leds.off();
+  idleYellowOn = true;
+  leds.setYellow(true);
+  lastIdleBlink = millis();
+}
+
+void updateIdle() {
+  unsigned long now = millis();
+  if (now - lastIdleBlink >= IDLE_BLINK_INTERVAL) {
+    lastIdleBlink = now;
+    idleYellowOn = !idleYellowOn;
+    leds.setYellow(idleYellowOn);
+  }
+}
+
+const unsigned long HOLD_STEP_MS = 1000;
+const unsigned long HOLD_BLINK_INTERVAL = 500;
+
+unsigned long holdStartTime = 0;
+uint8_t holdLedStep = 0;
+bool holdCompleted = false;
+unsigned long lastHoldBlink = 0;
+bool holdLedsOn = true;
+
+void enterHolding() {
+  robotState = HOLDING;
+  holdStartTime = millis();
+  holdLedStep = 0;
+  holdCompleted = false;
+  leds.off();
+}
+
+void updateHolding() {
+  unsigned long elapsed = millis() - holdStartTime;
+
+  if (!holdCompleted) {
+    uint8_t step = elapsed / HOLD_STEP_MS;
+    if (step > 3) step = 3;
+
+    if (step != holdLedStep) {
+      holdLedStep = step;
+      leds.off();
+      if (holdLedStep == 1)      leds.setRed(true);
+      else if (holdLedStep == 2) leds.setYellow(true);
+      else if (holdLedStep == 3) leds.setGreen(true);
+    }
+
+    if (elapsed >= 3 * HOLD_STEP_MS) {
+      holdCompleted = true;
+      lastHoldBlink = millis();
+      holdLedsOn = true;
+      leds.setGreen(true);
+      leds.setYellow(true);
+      leds.setRed(true);
+    }
+  } else {
+    unsigned long now = millis();
+    if (now - lastHoldBlink >= HOLD_BLINK_INTERVAL) {
+      lastHoldBlink = now;
+      holdLedsOn = !holdLedsOn;
+      leds.setGreen(holdLedsOn);
+      leds.setYellow(holdLedsOn);
+      leds.setRed(holdLedsOn);
     }
   }
 }
 
-/* ====== ESTADOS ====== */
-void estadoParar() {
+void startFollower() {
   leds.off();
-  leds.red();
-  linePid.resetar();
+  leds.setGreen(true);
+  linePid.reset();
+  robotState = FOLLOWING;
+}
+
+void stopFollower() {
   motorsControl.stop();
+  enterIdle();
 }
 
-void estadoSeguirLinha() {
-  sensorsIr.read();
-  float correction = linePid.calcularCorrecao();
-  motorsControl.setCorrection(BASE_SPEED * correction, BASE_SPEED, true);
+void enterCalibration() {
+  motorsControl.stop();
+  leds.off();
+  leds.setRed(true);
+  leds.setYellow(true);
+
+  calibrate(leds, sensorsIr);
 }
 
-
-/* ====== SETUP / LOOP ====== */
 void setup() {
   Serial.begin(115200);
 
-  leds.yellow();
+  leds.off();
+  leds.setRed(true);
 
+  leds.setYellow(true);
   pinMode(BTN, INPUT_PULLUP);
 
-  analogReadResolution(10);         // 10 bits (0-1023) é mais rápido que 12 bits e suficiente para o PID
-  // analogSetAttenuation(ADC_11db);   // Permite ler a faixa completa de 0 a 3.3V
+  leds.setYellow(false);
+  analogReadResolution(10);
 
+  leds.setYellow(true);
   motorsControl.begin();
+
+  leds.setYellow(false);
   sensorsIr.begin();
-  
-  if (IN_CALIBRATION) {
-    calibrate(leds, sensorsIr);
-    while (true) {
-      leds.green();
-      delay(300);
-      leds.off();
-      delay(300);
-    }
-  }
+  loadCalibration(sensorsIr);
 
-  stateParar = maquina.addState(&estadoParar);
-  stateSeguirLinha = maquina.addState(&estadoSeguirLinha);
-  
-  maquina.transitionTo(stateParar);
-
-  leds.off();
-  leds.green();
-
+  leds.setYellow(true);
   delay(100);
+
+  leds.setRed(false);
+  enterIdle();
 }
 
 void loop() {
-  // maquina.run();
-  // checkStart();
-  sensorsIr.read();
+  bool buttonPressed = readButtonDebounced();
 
-  sensorsIr.debugPrint();
+  switch (robotState) {
+    case IDLE:
+      updateIdle();
+      if (buttonPressed && !previousButtonState) {
+        enterHolding();
+      }
+      break;
 
-  delay(10);
+    case HOLDING:
+      updateHolding();
+      if (!buttonPressed && previousButtonState) {
+        if (holdCompleted) {
+          startFollower();
+        } else {
+          enterCalibration();
+        }
+      }
+      break;
+
+    case FOLLOWING:
+      sensorsIr.read();
+      {
+        float correction = linePid.calculateCorrection();
+        motorsControl.setCorrection(BASE_SPEED * correction, BASE_SPEED, true);
+      }
+      if (buttonPressed && !previousButtonState) {
+        stopFollower();
+      }
+      break;
+  }
+
+  previousButtonState = buttonPressed;
 }

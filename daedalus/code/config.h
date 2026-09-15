@@ -7,12 +7,10 @@
 #include "modules/motors.h"
 #include "modules/pid.h"
 
-extern uint8_t pinos_ir[7];
-extern int leituras_ir[7];
+extern uint8_t irPins[7];
+extern int irReadings[7];
 
 extern LinePID linePid;
 extern SensorsIR sensorsIr;
 extern MotorsControl motorsControl;
 extern Leds leds;
-
-// void calibrate(IRSensors& irSensors);

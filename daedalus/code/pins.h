@@ -4,7 +4,7 @@
 #define ESQ3_IR 36 // VP
 #define ESQ2_IR 39 // VN
 #define ESQ1_IR 34
-#define CEN_IR 25  // Testar no 4 ou 15
+#define CEN_IR 4  // Testar no 4 ou 15
 #define DIR1_IR 35
 #define DIR2_IR 32
 #define DIR3_IR 33

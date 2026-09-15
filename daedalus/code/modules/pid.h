@@ -4,68 +4,68 @@
 
 class LinePID {
 public:
-  explicit LinePID(int* arrayLeituras)
-    : leituras(arrayLeituras),
-      Kp(KP_LINE), Ki(KI_LINE), Kd(KD_LINE),
-      erro_anterior(0.0f), integral(0.0f) {
+  explicit LinePID(int* arrayReadings)
+    : readings(arrayReadings),
+      kp(KP_LINE), ki(KI_LINE), kd(KD_LINE),
+      previousError(0.0f), integral(0.0f) {
 
     float offset = (NUM_SENSORS_IR - 1) / 2.0f;
     for (int i = 0; i < NUM_SENSORS_IR; i++) {
-      pesos[i] = i - offset;
+      weights[i] = i - offset;
     }
   }
 
-  void setGanhosPID(float kp, float ki, float kd) {
-    Kp = kp; Ki = ki; Kd = kd;
+  void setPidGains(float kpValue, float kiValue, float kdValue) {
+    kp = kpValue; ki = kiValue; kd = kdValue;
   }
 
-  float calcularErro() {
-    float soma_ponderada = 0.0f;
-    float soma_ativa     = 0.0f;
+  float calculateError() {
+    float weightedSum = 0.0f;
+    float activeSum = 0.0f;
 
     for (int i = 0; i < NUM_SENSORS_IR; i++) {
-      float v = 4095.0f - leituras[i];
-      soma_ponderada += v * pesos[i];
-      soma_ativa     += v;
+      float value = 4095.0f - readings[i];
+      weightedSum += value * weights[i];
+      activeSum += value;
     }
 
-    if (soma_ativa < SOMA_ATIVA_MINIMA) {
+    if (activeSum < MIN_ACTIVE_SUM) {
       return 0.0f;
     }
 
-    float peso_max = (NUM_SENSORS_IR - 1) / 2.0f;
-    float erro     = soma_ponderada / (soma_ativa * peso_max);
-    return constrain(erro, -1.0f, 1.0f);
+    float maxWeight = (NUM_SENSORS_IR - 1) / 2.0f;
+    float error = weightedSum / (activeSum * maxWeight);
+    return constrain(error, -1.0f, 1.0f);
   }
 
-  float calcularCorrecao() {
-    float erro = calcularErro();
+  float calculateCorrection() {
+    float error = calculateError();
 
-    integral += erro;
+    integral += error;
     integral = constrain(integral, -INTEGRAL_LIMIT, INTEGRAL_LIMIT);
 
-    float derivada = erro - erro_anterior;
-    erro_anterior  = erro;
+    float derivative = error - previousError;
+    previousError = error;
 
-    float saida = (Kp * erro) + (Ki * integral) + (Kd * derivada);
-    return constrain(saida, -1.0f, 1.0f);
+    float output = (kp * error) + (ki * integral) + (kd * derivative);
+    return constrain(output, -1.0f, 1.0f);
   }
 
-  void resetar() {
-    erro_anterior = 0.0f;
-    integral      = 0.0f;
+  void reset() {
+    previousError = 0.0f;
+    integral = 0.0f;
   }
 
-  float getErroAtual()   const { return erro_anterior; }
-  float getIntegral()    const { return integral; }
+  float getCurrentError() const { return previousError; }
+  float getIntegral() const { return integral; }
 
 private:
-  int*  leituras;
-  float Kp, Ki, Kd;
-  float erro_anterior;
+  int* readings;
+  float kp, ki, kd;
+  float previousError;
   float integral;
-  float pesos[NUM_SENSORS_IR];
+  float weights[NUM_SENSORS_IR];
 
-  static constexpr float SOMA_ATIVA_MINIMA = 2000.0f;
-  static constexpr float INTEGRAL_LIMIT    = MAX_INTEGRAL;
+  static constexpr float MIN_ACTIVE_SUM = 2000.0f;
+  static constexpr float INTEGRAL_LIMIT = MAX_INTEGRAL;
 };

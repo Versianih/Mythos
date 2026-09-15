@@ -34,8 +34,5 @@
 #define DEBOUNCE_CALIBRATION 200
 // ==== ======== ====
 
-#define IN_CALIBRATION false
-
-
-void waitBtnPress(Leds leds, const char* message);
+bool loadCalibration(SensorsIR& sensorsIr);
 void calibrate(Leds& leds, SensorsIR& sensorsIr);

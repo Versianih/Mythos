@@ -49,7 +49,7 @@ public:
     }
   }
 
-  void calibrate(bool sobre_branco) {
+  void calibrate(bool onWhite) {
     const int N = 50;
     uint32_t acc[NUM_SENSORS] = {0};
     uint16_t ir_on[NUM_SENSORS];
@@ -73,11 +73,11 @@ public:
 
     for (int i = 0; i < NUM_SENSORS; i++) {
       int val = acc[i] / N;
-      if (sobre_branco) _calWhite[i] = val;
-      else              _calBlack[i] = val;
+      if (onWhite) _calWhite[i] = val;
+      else         _calBlack[i] = val;
     }
-    
-    preComputeScale(); 
+
+    preComputeScale();
   }
 
   void debugPrint() const {
@@ -94,6 +94,14 @@ public:
 
   void getCalBlack(int out[]) const {
     for (int i = 0; i < NUM_SENSORS; i++) out[i] = _calBlack[i];
+  }
+
+  void setCalibration(const int white[], const int black[]) {
+    for (int i = 0; i < NUM_SENSORS; i++) {
+      _calWhite[i] = white[i];
+      _calBlack[i] = black[i];
+    }
+    preComputeScale();
   }
 
 private:
