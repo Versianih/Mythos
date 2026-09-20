@@ -6,11 +6,12 @@ SKETCH := .
 
 BAUDRATE := 115200
 
-.PHONY: help ports compile upload monitor flash clean
+.PHONY: help ports compile rebuild upload monitor flash clean
 
 help:
 	@echo "  make ports  : Lista as portas seriais/COM disponíveis"
 	@echo "  make compile     : Compila o projeto"
+	@echo "  make rebuild     : Compila sem reutilizar o cache"
 	@echo "  make upload      : Faz o upload para a placa"
 	@echo "  make monitor     : Abre o monitor serial"
 	@echo "  make flash       : Compila e faz o upload em um só comando"
@@ -20,7 +21,10 @@ ports:
 	arduino-cli board list
 
 compile:
-	arduino-cli compile --fqbn $(FQBN) $(SKETCH)
+	arduino-cli compile --fqbn $(FQBN) $(BUILD_FLAGS) $(SKETCH)
+
+rebuild:
+	arduino-cli compile --clean --fqbn $(FQBN) $(BUILD_FLAGS) $(SKETCH)
 
 upload:
 	arduino-cli upload -p $(PORT) --fqbn $(FQBN) $(SKETCH)

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAMEPAD_H
+#define GAMEPAD_H
 
 #include "../libs.h"
 #include "actions.h"
@@ -89,3 +90,5 @@ class GamepadController {
             return (int8_t)constrain(result, -100, 100);
         }
 };
+
+#endif

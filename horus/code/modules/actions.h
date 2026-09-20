@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ACTIONS_H
+#define ACTIONS_H
 
 #include "../libs.h"
 #include "motors.h"
@@ -148,3 +149,5 @@ class Actions {
             _leds.setGreen(_connectionTest);
         }
 };
+
+#endif

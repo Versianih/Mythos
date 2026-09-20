@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LEDS_H
+#define LEDS_H
 
 #include <Arduino.h>
 
@@ -31,3 +32,5 @@ private:
     uint8_t redPin_;
     uint8_t yellowPin_;
 };
+
+#endif

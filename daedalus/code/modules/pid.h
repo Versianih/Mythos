@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PID_H
+#define PID_H
 
 #include <Arduino.h>
 
@@ -69,3 +70,5 @@ private:
   static constexpr float MIN_ACTIVE_SUM = 2000.0f;
   static constexpr float INTEGRAL_LIMIT = MAX_INTEGRAL;
 };
+
+#endif

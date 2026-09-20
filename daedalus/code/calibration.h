@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CALIBRATION_H
+#define CALIBRATION_H
 
 #include <Arduino.h>
 #include "pins.h"
@@ -36,3 +37,5 @@
 
 bool loadCalibration(SensorsIR& sensorsIr);
 void calibrate(Leds& leds, SensorsIR& sensorsIr);
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include "libs.h"
 #include "calibration.h"
@@ -12,3 +13,5 @@ extern Motors motors;
 extern Leds leds;
 extern Actions actions;
 extern GamepadController gamepad;
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef PINS_H
+#define PINS_H
 
 // ==== InfraVermelho ====
 #define ESQ3_IR 36 // VP
@@ -31,3 +32,5 @@
 #define LED_AMARELO 5
 #define LED_VERMELHO 17
 // ==== ==== ====
+
+#endif

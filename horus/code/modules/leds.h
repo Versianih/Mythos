@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LEDS_H
+#define LEDS_H
 
 #include "../libs.h"
 
@@ -93,3 +94,5 @@ class Leds {
             setRed(mask & RED);
         }
 };
+
+#endif

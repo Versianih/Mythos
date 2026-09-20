@@ -1,4 +1,5 @@
-#pragma once
+#ifndef IR_H
+#define IR_H
 
 #include <Arduino.h>
 
@@ -126,3 +127,5 @@ private:
     }
   }
 };
+
+#endif

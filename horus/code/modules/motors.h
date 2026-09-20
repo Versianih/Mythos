@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MOTORS_H
+#define MOTORS_H
 
 #include "../libs.h"
 
@@ -80,3 +81,5 @@ class Motors {
             ledcWrite(channel, abs(speed));
         }
 };
+
+#endif

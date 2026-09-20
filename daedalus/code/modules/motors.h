@@ -1,4 +1,5 @@
-#pragma once
+#ifndef MOTORS_H
+#define MOTORS_H
 
 #include <Arduino.h>
 
@@ -97,3 +98,5 @@ public:
   Motor *getRightMotor()  { return rightMotor; }
   Motor *getLeftMotor() { return leftMotor; }
 };
+
+#endif

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CONFIG_H
+#define CONFIG_H
 
 #include "libs.h"
 
@@ -14,3 +15,5 @@ extern LinePID linePid;
 extern SensorsIR sensorsIr;
 extern MotorsControl motorsControl;
 extern Leds leds;
+
+#endif
