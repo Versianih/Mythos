@@ -1,41 +1,71 @@
 #pragma once
 
-#include "libs.h"
+#include "../libs.h"
 
 class Motors {
     public:
-        Motors() {}
+        Motors(
+            uint8_t leftIn1, uint8_t leftIn2, uint8_t leftPwm,
+            uint8_t rightIn1, uint8_t rightIn2, uint8_t rightPwm,
+            uint8_t leftChannel, uint8_t rightChannel,
+            uint32_t pwmFrequency, uint8_t pwmResolution, uint16_t pwmMax
+        ): 
+            _leftIn1(leftIn1), _leftIn2(leftIn2), _leftPwm(leftPwm),
+            _rightIn1(rightIn1), _rightIn2(rightIn2), _rightPwm(rightPwm),
+            _leftChannel(leftChannel), _rightChannel(rightChannel),
+            _pwmFrequency(pwmFrequency), _pwmResolution(pwmResolution), _pwmMax(pwmMax) 
+        {}
 
         void begin() {
-            pinMode(PIN_AIN1, OUTPUT);
-            pinMode(PIN_AIN2, OUTPUT);
-            pinMode(PIN_PWMA, OUTPUT);
+            pinMode(_leftIn1, OUTPUT);
+            pinMode(_leftIn2, OUTPUT);
+            pinMode(_rightIn1, OUTPUT);
+            pinMode(_rightIn2, OUTPUT);
 
-            pinMode(PIN_BIN1, OUTPUT);
-            pinMode(PIN_BIN2, OUTPUT);
-            pinMode(PIN_PWMB, OUTPUT);
+            ledcSetup(_leftChannel, _pwmFrequency, _pwmResolution);
+            ledcSetup(_rightChannel, _pwmFrequency, _pwmResolution);
+            ledcAttachPin(_leftPwm, _leftChannel);
+            ledcAttachPin(_rightPwm, _rightChannel);
 
             stop();
         }
 
         void drive(int speedA, int speedB) {
-            driveMotor(PIN_AIN1, PIN_AIN2, PIN_PWMA, speedA);
-            driveMotor(PIN_BIN1, PIN_BIN2, PIN_PWMB, speedB);
+            speedA = constrain(speedA * MOTOR_CONNECTION, -_pwmMax, _pwmMax);
+            speedB = constrain(speedB * MOTOR_CONNECTION, -_pwmMax, _pwmMax);
+
+            if (_hasCommand && speedA == _speedA && speedB == _speedB) return;
+
+            driveMotor(_leftIn1, _leftIn2, _leftChannel, speedA);
+            driveMotor(_rightIn1, _rightIn2, _rightChannel, speedB);
+            _speedA = speedA;
+            _speedB = speedB;
+            _hasCommand = true;
         }
 
         void stop() {
+            _hasCommand = false;
             drive(0, 0);
         }
 
-        void brake() {
-            brakeMotor(PIN_AIN1, PIN_AIN2, PIN_PWMA);
-            brakeMotor(PIN_BIN1, PIN_BIN2, PIN_PWMB);
-        }
-
     private:
-        void driveMotor(uint8_t in1, uint8_t in2, uint8_t pwm, int speed) {
-            speed = constrain(speed, -255, 255);
+        const uint8_t _leftIn1;
+        const uint8_t _leftIn2;
+        const uint8_t _leftPwm;
+        const uint8_t _rightIn1;
+        const uint8_t _rightIn2;
+        const uint8_t _rightPwm;
+        const uint8_t _leftChannel;
+        const uint8_t _rightChannel;
+        const uint32_t _pwmFrequency;
+        const uint8_t _pwmResolution;
+        const uint16_t _pwmMax;
 
+        int _speedA = 0;
+        int _speedB = 0;
+        bool _hasCommand = false;
+
+        void driveMotor(uint8_t in1, uint8_t in2, uint8_t channel, int speed) {
             if (speed > 0) {
                 digitalWrite(in1, HIGH);
                 digitalWrite(in2, LOW);
@@ -47,12 +77,6 @@ class Motors {
                 digitalWrite(in2, LOW);
             }
 
-            analogWrite(pwm, abs(speed));
-        }
-
-        void brakeMotor(uint8_t in1, uint8_t in2, uint8_t pwm) {
-            digitalWrite(in1, HIGH);
-            digitalWrite(in2, HIGH);
-            analogWrite(pwm, 0);
+            ledcWrite(channel, abs(speed));
         }
 };

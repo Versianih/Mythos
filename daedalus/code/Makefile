@@ -1,13 +1,10 @@
 FQBN := esp32:esp32:esp32
 
-PORT ?= /dev/ttyACM0
+PORT ?= /dev/ttyUSB0
 
 SKETCH := .
 
 BAUDRATE := 115200
-
-# (Descomente a linha abaixo se precisar ativar o USB CDC nativo da ESP32-S3)
-# BUILD_FLAGS := --build-property build.usb_cdc_enabled=true
 
 .PHONY: help ports compile upload monitor flash clean
 
