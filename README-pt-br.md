@@ -29,7 +29,7 @@ mythos/
 └── README-pt-br.md
 ```
 
-Cada robô possui sua própria pasta e documentação individual, códigos e estruturas compartilhadas e gerais, são armazenados e documentados na pasta [`global/`](./global/).
+Cada robô possui sua própria pasta e documentação individual. Códigos e estruturas compartilhadas gerais, são armazenados e documentados na pasta [`global/`](./global/).
 
 
 # Robôs
@@ -37,3 +37,13 @@ Cada robô possui sua própria pasta e documentação individual, códigos e est
 - **[Hórus](./horus/)**: Robô de mini-sumô de 15x15cm e 1Kg controlado via controle de PS4, que utiliza o **ESP-WROOM-32U** como microcontrolador.
 
 # Softwares
+## Programação
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Arduino IDE](https://docs.arduino.cc/software/ide/)
+- [Arduino CLI](https://docs.arduino.cc/arduino-cli/)
+
+## Modelagem 3D
+- [Onshape](https://cad.onshape.com/)
+
+## PCB Design
+- [EasyEDA](https://easyeda.com/)

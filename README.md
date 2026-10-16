@@ -35,7 +35,6 @@ Each robot has its own folder and individual documentation. Shared and general-p
 # Robots
 
 - **[Daedalus](./daedalus/)**: Line-following robot equipped with 7 infrared sensors controlled by an **ESP-WROOM-32U**.
-
 - **[Hórus](./horus/)**: 15x15 cm, 1 kg mini-sumo robot controlled via a PS4 controller, using the **ESP-WROOM-32U** as its microcontroller.
 
 # Softwares

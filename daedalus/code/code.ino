@@ -8,6 +8,12 @@ enum RobotState {
 
 RobotState robotState = IDLE;
 bool previousButtonState = false;
+unsigned long lastSensorDebug = 0;
+unsigned long lineLostSince = 0;
+bool lineLost = false;
+float lastLineDirection = 0.0f;
+bool hasSearchDirection = false;
+float correction;
 
 bool readButtonDebounced() {
   static bool stableState = false;
@@ -26,6 +32,16 @@ bool readButtonDebounced() {
   }
 
   return stableState;
+}
+
+bool shouldPrintSensorDebug() {
+  unsigned long now = millis();
+  if (now - lastSensorDebug < SENSOR_DEBUG_INTERVAL_MS) {
+    return false;
+  }
+
+  lastSensorDebug = now;
+  return true;
 }
 
 unsigned long lastIdleBlink = 0;
@@ -75,7 +91,6 @@ void updateHolding() {
 
     if (step != holdLedStep) {
       holdLedStep = step;
-      leds.off();
       if (holdLedStep == 1)      leds.setRed(true);
       else if (holdLedStep == 2) leds.setYellow(true);
       else if (holdLedStep == 3) leds.setGreen(true);
@@ -105,6 +120,9 @@ void startFollower() {
   leds.off();
   leds.setGreen(true);
   linePid.reset();
+  lineLost = false;
+  lastLineDirection = 0.0f;
+  hasSearchDirection = false;
   robotState = FOLLOWING;
 }
 
@@ -154,6 +172,10 @@ void loop() {
   switch (robotState) {
     case IDLE:
       updateIdle();
+      if (shouldPrintSensorDebug()) {
+        sensorsIr.read();
+        sensorsIr.debugPrint();
+      }
       if (buttonPressed && !previousButtonState) {
         enterHolding();
       }
@@ -173,8 +195,43 @@ void loop() {
     case FOLLOWING:
       sensorsIr.read();
       {
-        float correction = linePid.calculateCorrection();
-        motorsControl.setCorrection(BASE_SPEED * correction, BASE_SPEED, true);
+        if (linePid.calculateCorrection(correction)) {
+          lineLost = false;
+          float currentError = linePid.getCurrentError();
+          if (currentError >= LINE_SEARCH_DIRECTION_THRESHOLD ||
+              currentError <= -LINE_SEARCH_DIRECTION_THRESHOLD) {
+            lastLineDirection = currentError;
+            hasSearchDirection = true;
+          }
+          float followerSpeed = BASE_SPEED;
+          float turnAmount = currentError >= 0.0f ? currentError : -currentError;
+          if (turnAmount > SHARP_TURN_ERROR) {
+            float turnRange = 1.0f - SHARP_TURN_ERROR;
+            float turnProgress = (turnAmount - SHARP_TURN_ERROR) / turnRange;
+            turnProgress = constrain(turnProgress, 0.0f, 1.0f);
+            float speedFactor = 1.0f - ((1.0f - SHARP_TURN_SPEED_FACTOR) * turnProgress);
+            followerSpeed *= speedFactor;
+            motorsControl.setCorrection(0, speedFactor);
+          }
+          motorsControl.setCorrection(followerSpeed * correction, followerSpeed, true);
+        } else {
+          if (!lineLost) {
+            lineLost = true;
+            lineLostSince = millis();
+          }
+
+          if (millis() - lineLostSince >= LINE_LOST_CONFIRM_MS) {
+            if (hasSearchDirection) {
+              float searchSpeed = BASE_SPEED * LINE_SEARCH_SPEED_FACTOR;
+              motorsControl.setCorrection(lastLineDirection, searchSpeed, true, true);
+            } else {
+              motorsControl.stop();
+            }
+          }
+        }
+      }
+      if (shouldPrintSensorDebug()) {
+        sensorsIr.debugPrint();
       }
       if (buttonPressed && !previousButtonState) {
         stopFollower();
