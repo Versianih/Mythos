@@ -7,8 +7,8 @@ enum class LedMode {
     BOOT,       // vermelho fixo
     WAITING,    // amarelo piscando: sem controle conectado
     CONNECTED,  // verde fixo: conectado e parado
-    ACTIVE,     // verde + amarelo: em movimento
-    TURBO,      // verde + amarelo + vermelho
+    ACTIVE,     // amarelo: em movimento
+    TURBO,      // amarelo + vermelho
     BRAKING     // vermelho fixo: freio ativo
 };
 
@@ -72,8 +72,8 @@ class Leds {
                 case LedMode::BOOT:      return RED;
                 case LedMode::WAITING:   return YELLOW;
                 case LedMode::CONNECTED: return GREEN;
-                case LedMode::ACTIVE:    return GREEN | YELLOW;
-                case LedMode::TURBO:     return GREEN | YELLOW | RED;
+                case LedMode::ACTIVE:    return YELLOW;
+                case LedMode::TURBO:     return YELLOW | RED;
                 case LedMode::BRAKING:   return RED;
             }
             return 0;

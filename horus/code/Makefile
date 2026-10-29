@@ -1,4 +1,5 @@
-FQBN := esp32-bluepad32:esp32:esp32
+FQBN := esp32:esp32:esp32
+# FQBN := esp32:esp32:esp32:PartitionScheme=huge_app    # Se estourar a flash
 
 PORT ?= /dev/ttyUSB0
 
@@ -9,7 +10,7 @@ BAUDRATE := 115200
 .PHONY: help ports compile rebuild upload monitor flash clean
 
 help:
-	@echo "  make ports  : Lista as portas seriais/COM disponíveis"
+	@echo "  make ports       : Lista as portas seriais/COM disponíveis"
 	@echo "  make compile     : Compila o projeto"
 	@echo "  make rebuild     : Compila sem reutilizar o cache"
 	@echo "  make upload      : Faz o upload para a placa"

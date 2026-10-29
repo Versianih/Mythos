@@ -9,4 +9,4 @@ Motors motors(
 
 Leds leds(PIN_LED_GREEN, PIN_LED_YELLOW, PIN_LED_RED);
 Actions actions(motors, leds);
-GamepadController gamepad(actions);
+BleLink ble(actions);

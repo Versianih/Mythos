@@ -6,11 +6,11 @@
 #include "leds.h"
 
 enum class Button {
-    L1,
-    L2,
-    R1,
-    R2,
-    A
+    TURBO,       // segurado: velocidade turbo
+    STOP,        // ligado: "parado"
+    TURN_LEFT,   // segurado: gira à esquerda
+    TURN_RIGHT,  // segurado: gira à direita
+    TEST         // segurado: LED verde de teste de conexão
 };
 
 class Actions {
@@ -21,6 +21,9 @@ class Actions {
         void begin() {
             _leds.setMode(LedMode::WAITING);
         }
+
+        bool isTurbo() const  { return _turbo; }
+        bool isStopped() const { return _movementLocked; }
 
         void onConnect() {
             reset();
@@ -41,23 +44,23 @@ class Actions {
 
         void onButton(Button button, bool pressed) {
             switch (button) {
-                case Button::R1:
+                case Button::TURBO:
                     _turbo = pressed;
                     break;
 
-                case Button::L1:
+                case Button::STOP:
                     _movementLocked = pressed;
                     break;
 
-                case Button::L2:
+                case Button::TURN_LEFT:
                     _turnLeft = pressed;
                     break;
 
-                case Button::R2:
+                case Button::TURN_RIGHT:
                     _turnRight = pressed;
                     break;
 
-                case Button::A:
+                case Button::TEST:
                     _connectionTest = pressed;
                     break;
             }
@@ -67,7 +70,7 @@ class Actions {
         void update() {
             unsigned long now = millis();
 
-            if (now - _lastCommand > WATCHDOG_TIMEOUT_MS) {
+            if (now - _lastCommand > (unsigned long)WATCHDOG_TIMEOUT_MS) {
                 _motors.stop();
                 return;
             }
@@ -106,8 +109,6 @@ class Actions {
 
         unsigned long _lastCommand = 0;
 
-        static const unsigned long WATCHDOG_TIMEOUT_MS = 100;
-
         void reset() {
             _stickForward = 0;
             _stickTurn = 0;
@@ -123,6 +124,7 @@ class Actions {
         }
 
         void applyMix(int forward, int turn) {
+            turn *= TURN_DIRECTION;
             int left = forward + turn;
             int right = forward - turn;
 

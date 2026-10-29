@@ -6,13 +6,13 @@ void setup() {
 
     leds.begin();
     motors.begin();
-    gamepad.begin();
     actions.begin();
+    ble.begin();
 }
 
 void loop() {
-    gamepad.update();
+    ble.update();
     actions.update();
     leds.update();
-    yield();
+    delay(1);
 }

@@ -2,7 +2,8 @@
 #define CALIBRATION_H
 
 // ==== MOTORES ====
-#define MOTOR_CONNECTION 1  // (Invertido = -1; Normal = 1)
+#define MOTOR_CONNECTION -1  // (Invertido = -1; Normal = 1)
+#define TURN_DIRECTION 1
 
 #define PWM_FREQ 7000
 #define PWM_RESOLUTION 8
@@ -14,21 +15,15 @@
 // ==== ======= ====
 
 
-// ==== JOYSTICK ====
-#define LX_CENTER   4
-#define LX_MIN   -508
-#define LX_MAX    512
-#define LY_CENTER   4
-#define LY_MIN   -508
-#define LY_MAX    512
-#define RX_CENTER   4
-#define RX_MIN   -508
-#define RX_MAX    512
-#define RY_CENTER   4
-#define RY_MIN   -508
-#define RY_MAX    512
+// ==== BLE ====
+#define BLE_DEVICE_NAME "Mythos: HORUS"
+#define BLE_TX_POWER ESP_PWR_LVL_P9
 
-#define AXIS_DEADZONE  40
-// ==== ======== ====
+#define STICK_DEADZONE 8
+
+#define WATCHDOG_TIMEOUT_MS 300
+
+// #define DEBUG_LOG_MS 250  // Comentar para silenciar o serial
+// ==== === ====
 
 #endif

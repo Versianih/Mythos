@@ -7,11 +7,11 @@
 #include "modules/motors.h"
 #include "modules/leds.h"
 #include "modules/actions.h"
-#include "modules/gamepad.h"
+#include "modules/ble.h"
 
 extern Motors motors;
 extern Leds leds;
 extern Actions actions;
-extern GamepadController gamepad;
+extern BleLink ble;
 
 #endif
