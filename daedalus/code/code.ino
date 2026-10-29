@@ -211,7 +211,6 @@ void loop() {
             turnProgress = constrain(turnProgress, 0.0f, 1.0f);
             float speedFactor = 1.0f - ((1.0f - SHARP_TURN_SPEED_FACTOR) * turnProgress);
             followerSpeed *= speedFactor;
-            motorsControl.setCorrection(0, speedFactor);
           }
           motorsControl.setCorrection(followerSpeed * correction, followerSpeed, true);
         } else {
@@ -225,10 +224,11 @@ void loop() {
               float searchSpeed = BASE_SPEED * LINE_SEARCH_SPEED_FACTOR;
               motorsControl.setCorrection(lastLineDirection, searchSpeed, true, true);
             } else {
-              motorsControl.stop();
+              motorsControl.release();
             }
           }
         }
+        motorsControl.update();
       }
       if (shouldPrintSensorDebug()) {
         sensorsIr.debugPrint();

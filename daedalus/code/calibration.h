@@ -18,9 +18,9 @@ static const int IR_DEFAULT_BLACK[NUM_SENSORS_IR] = { 0, 0, 0, 0, 0, 0, 0 };
 
 
 // ==== LinePID ====
-#define KP_LINE 3.1f
-#define KI_LINE 0.002f
-#define KD_LINE 0.3f
+#define KP_LINE 1.3f
+#define KI_LINE 0.001f
+#define KD_LINE 0.1f
 
 #define LINE_MIN_ACTIVE_SUM 2000
 #define LINE_LOST_CONFIRM_MS 30UL
@@ -42,11 +42,17 @@ static const int IR_DEFAULT_BLACK[NUM_SENSORS_IR] = { 0, 0, 0, 0, 0, 0, 0 };
 
 #define BASE_SPEED 45.0
 #define MOTOR_CONNECTION 1  // (Invertido = -1; Normal = 1)
+
+#define MOTOR_SLEW_UP      0.40f
+#define MOTOR_SLEW_DOWN    0.80f
+#define MOTOR_MIN_SPEED    10.0f
+
+#define MOTOR_MAX_DT_MS    5.0f
 // ==== ====== ====
 
 // ==== Debounce ====
-#define DEBOUNCE_START 100
-#define DEBOUNCE_CALIBRATION 100
+#define DEBOUNCE_START 200
+#define DEBOUNCE_CALIBRATION 200
 // ==== ======== ====
 
 bool loadCalibration(SensorsIR& sensorsIr);
